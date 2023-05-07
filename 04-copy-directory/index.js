@@ -1,26 +1,25 @@
 const path = require("path");
-const { promises: fsPromises } = require("fs");
+const fs = require("fs").promises;
 
 async function copyDir() {
   const sourceDir = path.join(__dirname, "files");
   const targetDir = path.join(__dirname, "files-copy");
 
-  await fsPromises.mkdir(targetDir, { recursive: true });
+  try {
+    await fs.mkdir(targetDir, { recursive: true });
 
-  const files = await fsPromises.readdir(sourceDir, { withFileTypes: true });
+    const files = await fs.readdir(sourceDir, { withFileTypes: true });
 
-  for (const file of files) {
-    const sourcePath = path.join(sourceDir, file.name);
-    const targetPath = path.join(targetDir, file.name);
+    for (const file of files) {
+      const sourcePath = path.join(sourceDir, file.name);
+      const targetPath = path.join(targetDir, file.name);
 
-    await fsPromises.copyFile(sourcePath, targetPath);
+      await fs.copyFile(sourcePath, targetPath);
+    }
+    console.log("Все файлы скопированы!");
+  } catch (err) {
+    console.error("Ошибка копирования файлов:", err);
   }
 }
 
-copyDir()
-  .then(() => {
-    console.log("Все файлы скопированы!");
-  })
-  .catch((err) => {
-    console.error("Ошибка копирования файлов:", err);
-  });
+copyDir();
